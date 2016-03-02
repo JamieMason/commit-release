@@ -18,6 +18,7 @@ function create(options, done) {
         .then(function(version) {
             var params = {
                 directory: options.directory,
+                force: options.force,
                 noVerify: options.noVerify,
                 postfix: options.postfix,
                 version: version
@@ -29,7 +30,7 @@ function create(options, done) {
             var writeDependencies = updateDepsLog.bind(null, options.directory);
             var stage = exec.shell.bind(null, 'git add . -A');
             var commit = exec.shell.bind(null, 'git commit -m "chore(release): ' + version + '"' + (params.noVerify ? ' --no-verify' : ''));
-            var tag = exec.shell.bind(null, 'git tag ' + version);
+            var tag = exec.shell.bind(null, 'git tag ' + version + (params.force ? ' --force' : ''));
 
             return checkVersion(params)
                 .then(bump)
