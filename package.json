@@ -12,7 +12,7 @@
   "dependencies": {
     "chalk": "1.1.1",
     "commander": "2.9.0",
-    "conventional-changelog": "0.5.1",
+    "conventional-changelog": "1.1.0",
     "conventional-recommended-version": "0.2.0",
     "package-json-to-readme": "1.5.0"
   },
