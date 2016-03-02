@@ -10,10 +10,12 @@ var commitRelease = require('./src/commitRelease');
 // implementation
 program
     .option('-p, --postfix [name]', 'a postfix such as "rc1", "canary" or "beta1"', '')
+    .option('-n, --no-verify', 'skip git commit hooks')
     .parse(process.argv);
 
 commitRelease.create({
     directory: process.cwd(),
+    noVerify: program.noVerify,
     postfix: program.postfix
 }, onComplete);
 
