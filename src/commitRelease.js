@@ -15,36 +15,38 @@ module.exports = {
 // implementation
 function create(options, done) {
     getVersion(options)
-        .then(function(version) {
-            var params = {
-                directory: options.directory,
-                force: options.force,
-                noVerify: options.noVerify,
-                postfix: options.postfix,
-                version: version
-            };
-            var logPath = path.resolve(params.directory, 'CHANGELOG.md');
-            var bump = exec.shell.bind(null, 'npm version ' + version + ' --no-git-tag-version --force');
-            var clearLog = exec.shell.bind(null, 'rm -f ' + logPath);
-            var writeLog = updateChangeLog.bind(null, params);
-            var writeDependencies = updateDepsLog.bind(null, options.directory);
-            var stage = exec.shell.bind(null, 'git add . -A');
-            var commit = exec.shell.bind(null, 'git commit -m "chore(release): ' + version + '"' + (params.noVerify ? ' --no-verify' : ''));
-            var tag = exec.shell.bind(null, 'git tag ' + version + (params.force ? ' --force' : ''));
-
-            return checkVersion(params)
-                .then(bump)
-                .then(clearLog)
-                .then(writeLog)
-                .then(writeDependencies)
-                .then(stage)
-                .then(commit)
-                .then(tag)
-                .then(function() {
-                    done(null, version);
-                });
-        })
+        .then(onVersionNumber)
         .catch(done);
+
+    function onVersionNumber(version) {
+        var params = {
+            directory: options.directory,
+            force: options.force,
+            noVerify: options.noVerify,
+            postfix: options.postfix,
+            version: version
+        };
+        var logPath = path.resolve(params.directory, 'CHANGELOG.md');
+        var bump = exec.shell.bind(null, 'npm version ' + version + ' --no-git-tag-version --force');
+        var clearLog = exec.shell.bind(null, 'rm -f ' + logPath);
+        var writeLog = updateChangeLog.bind(null, params);
+        var writeDependencies = updateDepsLog.bind(null, options.directory);
+        var stage = exec.shell.bind(null, 'git add . -A');
+        var commit = exec.shell.bind(null, 'git commit -m "chore(release): ' + version + '"' + (params.noVerify ? ' --no-verify' : ''));
+        var tag = exec.shell.bind(null, 'git tag ' + version + (params.force ? ' --force' : ''));
+
+        return checkVersion(params)
+            .then(bump)
+            .then(clearLog)
+            .then(writeLog)
+            .then(writeDependencies)
+            .then(stage)
+            .then(commit)
+            .then(tag)
+            .then(function() {
+                done(null, version);
+            });
+    }
 }
 
 function checkVersion(params) {
@@ -86,6 +88,9 @@ function updateChangeLog(params) {
 }
 
 function getVersion(params) {
+    if (params.overrideVersion) {
+        return Promise.resolve(params.overrideVersion);
+    }
     return new Promise(function(resolve, reject) {
         crv.get(params, function(err, version) {
             if (err) {
