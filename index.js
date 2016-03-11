@@ -25,7 +25,7 @@ commitRelease.create({
 
 function onComplete(err, version) {
     if (err) {
-        console.error(err.stack);
+        console.error(chalk.red(err.stack ? err.stack : err));
         process.exit(1);
     }
     console.log(chalk.green('Release ' + version + ' committed and tagged, changelog updated.'));

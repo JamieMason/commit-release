@@ -15,10 +15,24 @@ module.exports = {
 // implementation
 function create(options, done) {
     getVersion(options)
-        .then(onVersionNumber)
+        .then(checkTagExists)
+        .then(createCommit)
         .catch(done);
 
-    function onVersionNumber(version) {
+    function checkTagExists(version) {
+        if (!params.force) {
+            return exec.shell('git tag --list ' + version)
+                .then(function(output) {
+                    if (output.trim() !== '') {
+                        return Promise.reject('A tag with name "' + version + '" already exists.')
+                    }
+                    return version
+                })
+        }
+        return version
+    }
+
+    function createCommit(version) {
         var params = {
             directory: options.directory,
             force: options.force,
@@ -43,9 +57,15 @@ function create(options, done) {
             .then(stage)
             .then(commit)
             .then(tag)
-            .then(function() {
-                done(null, version);
-            });
+            .then(onSuccess, onError);
+
+        function onSuccess() {
+            done(null, version);
+        }
+
+        function onError(message) {
+            done(message);
+        }
     }
 }
 
