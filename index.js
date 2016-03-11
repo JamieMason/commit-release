@@ -23,10 +23,10 @@ commitRelease.create({
     postfix: program.postfix
 }, onComplete);
 
-function onComplete(err, version) {
+function onComplete(err, options) {
     if (err) {
         console.error(chalk.red(err.stack ? err.stack : err));
         process.exit(1);
     }
-    console.log(chalk.green('Release ' + version + ' committed and tagged, changelog updated.'));
+    console.log(chalk.green('Release ' + options.version + ' committed and tagged, changelog updated.'));
 }

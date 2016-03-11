@@ -17,82 +17,75 @@ function create(options, done) {
     getVersion(options)
         .then(checkTagExists)
         .then(createCommit)
-        .catch(done);
+        .then(onSuccess, onError)
+        .catch(onError);
 
-    function checkTagExists(version) {
-        if (!params.force) {
-            return exec.shell('git tag --list ' + version)
-                .then(function(output) {
-                    if (output.trim() !== '') {
-                        return Promise.reject('A tag with name "' + version + '" already exists.')
-                    }
-                    return version
-                })
-        }
-        return version
+    function onSuccess() {
+        done(null, options);
     }
 
-    function createCommit(version) {
-        var params = {
-            directory: options.directory,
-            force: options.force,
-            noVerify: options.noVerify,
-            postfix: options.postfix,
-            version: version
-        };
-        var logPath = path.resolve(params.directory, 'CHANGELOG.md');
-        var bump = exec.shell.bind(null, 'npm version ' + version + ' --no-git-tag-version --force');
-        var clearLog = exec.shell.bind(null, 'rm -f ' + logPath);
-        var writeLog = updateChangeLog.bind(null, params);
-        var writeDependencies = updateDepsLog.bind(null, options.directory);
-        var stage = exec.shell.bind(null, 'git add . -A');
-        var commit = exec.shell.bind(null, 'git commit -m "chore(release): ' + version + '"' + (params.noVerify ? ' --no-verify' : ''));
-        var tag = exec.shell.bind(null, 'git tag ' + version + (params.force ? ' --force' : ''));
-
-        return checkVersion(params)
-            .then(bump)
-            .then(clearLog)
-            .then(writeLog)
-            .then(writeDependencies)
-            .then(stage)
-            .then(commit)
-            .then(tag)
-            .then(onSuccess, onError);
-
-        function onSuccess() {
-            done(null, version);
-        }
-
-        function onError(message) {
-            done(message);
-        }
+    function onError(message) {
+        done(message);
     }
 }
 
-function checkVersion(params) {
+function checkTagExists(options) {
+    if (!options.force) {
+        return exec.shell('git tag --list ' + options.version)
+            .then(function(output) {
+                if (output.trim() !== '') {
+                    return Promise.reject('A tag with name "' + options.version + '" already exists.');
+                }
+                return options;
+            })
+    }
+    return options;
+}
+
+function createCommit(options) {
+    var logPath = path.resolve(options.directory, 'CHANGELOG.md');
+    var bump = exec.shell.bind(null, 'npm version ' + options.version + ' --no-git-tag-version --force');
+    var clearLog = exec.shell.bind(null, 'rm -f ' + logPath);
+    var writeLog = updateChangeLog.bind(null, options);
+    var writeDependencies = updateDepsLog.bind(null, options.directory);
+    var stage = exec.shell.bind(null, 'git add . -A');
+    var commit = exec.shell.bind(null, 'git commit -m "chore(release): ' + options.version + '"' + (options.noVerify ? ' --no-verify' : ''));
+    var tag = exec.shell.bind(null, 'git tag ' + options.version + (options.force ? ' --force' : ''));
+
+    return checkVersion(options)
+        .then(bump)
+        .then(clearLog)
+        .then(writeLog)
+        .then(writeDependencies)
+        .then(stage)
+        .then(commit)
+        .then(tag);
+}
+
+function checkVersion(options) {
     return new Promise(function(resolve, reject) {
-        var pkgPath = path.resolve(params.directory, 'package.json');
+        var pkgPath = path.resolve(options.directory, 'package.json');
         var pkg = require(pkgPath);
-        if (params.version === pkg.version) {
-            var error = new Error('Current version is already ' + params.version);
+        if (options.version === pkg.version) {
+            var error = new Error('Current version is already ' + options.version);
             reject(error);
         } else {
-            resolve(params.version);
+            resolve(options.version);
         }
     });
 }
 
-function updateChangeLog(params) {
+function updateChangeLog(options) {
     return new Promise(function(resolve, reject) {
         var writeStream = fs.createWriteStream(
-            path.resolve(params.directory, 'CHANGELOG.md')
+            path.resolve(options.directory, 'CHANGELOG.md')
         );
 
         writeStream.on('finish',
             onWriteEnd
         );
         changelog({
-            path: params.directory,
+            path: options.directory,
             preset: 'angular',
             releaseCount: 0
         }).pipe(writeStream);
@@ -101,22 +94,24 @@ function updateChangeLog(params) {
             if (err) {
                 reject(err);
             } else {
-                resolve(params.version);
+                resolve(options.version);
             }
         }
     });
 }
 
-function getVersion(params) {
-    if (params.overrideVersion) {
-        return Promise.resolve(params.overrideVersion);
+function getVersion(options) {
+    if (options.overrideVersion) {
+        options.version = options.overrideVersion;
+        return Promise.resolve(options);
     }
     return new Promise(function(resolve, reject) {
-        crv.get(params, function(err, version) {
+        crv.get(options, function(err, version) {
             if (err) {
                 reject(err);
             } else {
-                resolve(version);
+                options.version = version;
+                resolve(options);
             }
         });
     });
