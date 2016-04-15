@@ -121,7 +121,7 @@ function updateDepsLog(directory) {
     var bin = require.resolve('package-json-to-readme');
     var pkgPath = path.resolve(directory, 'package.json');
     var logFile = path.resolve(directory, 'DEPENDENCIES.md');
-    return exec.shell(bin + ' --no-footer ' + pkgPath)
+    return exec.shell('node ' + bin + ' --no-footer ' + pkgPath)
         .then(function(logData) {
             fs.writeFileSync(logFile, logData);
         });
