@@ -18,7 +18,7 @@ program
 commitRelease.create({
     directory: process.cwd(),
     force: program.force,
-    noVerify: program.noVerify,
+    noVerify: !program.verify,
     overrideVersion: program.override,
     postfix: program.postfix
 }, onComplete);
