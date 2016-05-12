@@ -1,5 +1,16 @@
+<a name="0.5.2"></a>
+## [0.5.2](https://github.com/JamieMason/commit-release/compare/0.5.0...v0.5.2) (2016-05-12)
+
+
+### Bug Fixes
+
+* **options:** fix --no-verify flag ([157da30](https://github.com/JamieMason/commit-release/commit/157da30)), closes [#4](https://github.com/JamieMason/commit-release/issues/4)
+* **shell:** add support for windows ([c351620](https://github.com/JamieMason/commit-release/commit/c351620)), closes [#3](https://github.com/JamieMason/commit-release/issues/3)
+
+
+
 <a name="0.5.0"></a>
-# [0.5.0](https://github.com/JamieMason/commit-release/compare/0.4.0...v0.5.0) (2016-03-11)
+# [0.5.0](https://github.com/JamieMason/commit-release/compare/0.4.0...0.5.0) (2016-03-11)
 
 
 ### Features
