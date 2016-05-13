@@ -22,8 +22,8 @@ npm install commit-release --save
 
 ## Dev Dependencies
 
+- [semistandard](https://github.com/Flet/semistandard): All the goodness of `feross/standard` with semicolons sprinkled on top.
 
-None
 
 ## License
 
