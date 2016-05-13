@@ -31,7 +31,7 @@ function create (options, done) {
 
 function checkTagExists (options) {
   if (!options.force) {
-    return exec.shell('git tag --list ' + options.version)
+    return exec.shell('git', ['tag', '--list', options.version])
       .then(function (output) {
         if (output.trim() !== '') {
           return Promise.reject('A tag with name "' + options.version + '" already exists.');
@@ -44,13 +44,13 @@ function checkTagExists (options) {
 
 function createCommit (options) {
   var logPath = path.resolve(options.directory, 'CHANGELOG.md');
-  var bump = exec.shell.bind(null, 'npm version ' + options.version + ' --no-git-tag-version --force');
-  var clearLog = exec.shell.bind(null, 'rm -f ' + logPath);
+  var bump = exec.shell.bind(null, 'npm', ['version', options.version, '--no-git-tag-version', '--force']);
+  var clearLog = exec.shell.bind(null, 'rm', ['-f', logPath]);
   var writeLog = updateChangeLog.bind(null, options);
   var writeDependencies = updateDepsLog.bind(null, options.directory);
-  var stage = exec.shell.bind(null, 'git add . -A');
-  var commit = exec.shell.bind(null, 'git commit -m "chore(release): ' + options.version + '"' + (options.noVerify ? ' --no-verify' : ''));
-  var tag = exec.shell.bind(null, 'git tag ' + options.version + (options.force ? ' --force' : ''));
+  var stage = exec.shell.bind(null, 'git', ['add', '.', '-A']);
+  var commit = exec.shell.bind(null, 'git', ['commit', '-m', 'chore(release): ' + options.version, options.noVerify ? '--no-verify' : '']);
+  var tag = exec.shell.bind(null, 'git', ['tag', options.version, options.force ? '--force' : '']);
 
   return checkVersion(options)
     .then(bump)
@@ -121,7 +121,7 @@ function updateDepsLog (directory) {
   var bin = require.resolve('package-json-to-readme');
   var pkgPath = path.resolve(directory, 'package.json');
   var logFile = path.resolve(directory, 'DEPENDENCIES.md');
-  return exec.shell('node ' + bin + ' --no-footer ' + pkgPath)
+  return exec.shell('node', [bin, '--no-footer', pkgPath])
     .then(function (logData) {
       fs.writeFileSync(logFile, logData);
     });
