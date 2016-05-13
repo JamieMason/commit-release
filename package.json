@@ -16,6 +16,9 @@
     "conventional-recommended-version": "0.3.0",
     "package-json-to-readme": "1.5.0"
   },
+  "devDependencies": {
+    "semistandard": "7.0.5"
+  },
   "homepage": "https://github.com/JamieMason/commit-release",
   "issues": "https://github.com/JamieMason/commit-release/issues",
   "keywords": [
@@ -34,5 +37,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/JamieMason/commit-release.git"
+  },
+  "scripts": {
+    "lint": "semistandard --format"
   }
 }
