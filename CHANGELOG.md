@@ -1,5 +1,15 @@
+<a name="0.6.1"></a>
+## [0.6.1](https://github.com/JamieMason/commit-release/compare/0.6.0...v0.6.1) (2016-05-13)
+
+
+### Bug Fixes
+
+* **npm:** update dependencies ([9190f0d](https://github.com/JamieMason/commit-release/commit/9190f0d))
+
+
+
 <a name="0.6.0"></a>
-# [0.6.0](https://github.com/JamieMason/commit-release/compare/0.5.2...v0.6.0) (2016-05-13)
+# [0.6.0](https://github.com/JamieMason/commit-release/compare/0.5.2...0.6.0) (2016-05-13)
 
 
 ### Bug Fixes
