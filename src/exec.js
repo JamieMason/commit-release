@@ -40,11 +40,11 @@ function execShell (program, args) {
   });
 }
 
-function isTruthy(value) {
+function isTruthy (value) {
   return !!value;
 }
 
-function getLogTemplate(program, args) {
+function getLogTemplate (program, args) {
   var command = [program].concat(args).join(' ');
   return chalk.grey('>> ' + command) + '\n%s';
 }
