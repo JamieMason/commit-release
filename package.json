@@ -1,7 +1,7 @@
 {
   "name": "commit-release",
   "description": "Commit and tag a release for a conventional changelog project.",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "author": "Jamie Mason (https://github.com/JamieMason)",
   "bin": {
     "commit-release": "./index.js"
