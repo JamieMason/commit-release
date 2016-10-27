@@ -8,7 +8,7 @@ module.exports = {
 };
 
 // implementation
-function execShell (program, args) {
+function execShell (program, args, verbose) {
   return new Promise(function (resolve, reject) {
     var truthyArgs = args.filter(isTruthy);
     var proc = childProcess.spawn(program, truthyArgs);
@@ -21,8 +21,8 @@ function execShell (program, args) {
     proc.on('close', onClose);
 
     function onStdout (data) {
-      console.log(template, data);
-      stdout += data;
+      console.log(template, tell(data));
+      stdout += tell(data);
     }
 
     function onStderr (data) {
@@ -36,6 +36,10 @@ function execShell (program, args) {
       } else {
         resolve(stdout);
       }
+    }
+
+    function tell(data) {
+      return verbose ? data : '';
     }
   });
 }

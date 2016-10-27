@@ -14,6 +14,7 @@ program
   .option('-o, --override [version]', 'override recommended version number', '')
   .option('-p, --postfix [name]', 'a postfix such as "rc1", "canary" or "beta1"', '')
   .option('-t, --no-tag', 'does not automatically tag the commit')
+  .option('-v, --verbose', 'let the shell commands be more talkative')
   .parse(process.argv);
 
 commitRelease.create({
@@ -23,6 +24,7 @@ commitRelease.create({
   overrideVersion: program.override,
   postfix: program.postfix,
   noTag: !program.tag,
+  verbose: program.verbose
 }, onComplete);
 
 function onComplete (err, options) {

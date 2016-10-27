@@ -31,7 +31,7 @@ function create (options, done) {
 
 function checkTagExists (options) {
   if (!options.force) {
-    return exec.shell('git', ['tag', '--list', options.version])
+    return exec.shell('git', ['tag', '--list', options.version], options.verbose)
       .then(function (output) {
         if (output.trim() !== '') {
           return Promise.reject('A tag with name "' + options.version + '" already exists.');
@@ -50,13 +50,13 @@ function createCommit (options) {
   var verify = options.noVerify ? '--no-verify' : '';
 
   // actions
-  var bump = exec.shell.bind(null, 'npm', ['version', options.version, '--no-git-tag-version', '--force']);
-  var clearLog = exec.shell.bind(null, 'rm', ['-f', logPath]);
+  var bump = exec.shell.bind(null, 'npm', ['version', options.version, '--no-git-tag-version', '--force'], options.verbose);
+  var clearLog = exec.shell.bind(null, 'rm', ['-f', logPath], options.verbose);
   var writeLog = updateChangeLog.bind(null, options);
-  var writeDependencies = updateDepsLog.bind(null, options.directory);
-  var stage = exec.shell.bind(null, 'git', ['add', '.', '-A']);
-  var commit = exec.shell.bind(null, 'git', ['commit', '-m', message, verify]);
-  var doTag = exec.shell.bind(null, 'git', ['tag', options.version, force]);
+  var writeDependencies = updateDepsLog.bind(null, options);
+  var stage = exec.shell.bind(null, 'git', ['add', '.', '-A'], options.verbose);
+  var commit = exec.shell.bind(null, 'git', ['commit', '-m', message, verify], options.verbose);
+  var doTag = exec.shell.bind(null, 'git', ['tag', options.version, force], options.verbose);
   var tag = !options.noTag ? doTag() : options;
 
   return checkVersion(options)
@@ -124,11 +124,12 @@ function getVersion (options) {
   });
 }
 
-function updateDepsLog (directory) {
+function updateDepsLog (options) {
+  var directory = options.directory;
   var bin = require.resolve('package-json-to-readme');
   var pkgPath = path.resolve(directory, 'package.json');
   var logFile = path.resolve(directory, 'DEPENDENCIES.md');
-  return exec.shell('node', [bin, '--no-footer', pkgPath])
+  return exec.shell('node', [bin, '--no-footer', pkgPath], options.verbose)
     .then(function (logData) {
       fs.writeFileSync(logFile, logData);
     });
