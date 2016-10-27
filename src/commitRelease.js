@@ -1,6 +1,5 @@
 // 3rd party modules
 var changelog = require('conventional-changelog');
-var crv = require('conventional-recommended-version');
 var fs = require('fs');
 var path = require('path');
 
@@ -113,7 +112,9 @@ function getVersion (options) {
     return Promise.resolve(options);
   }
   return new Promise(function (resolve, reject) {
-    crv.get(options, function (err, version) {
+    var method = options.bump ? './bump' : 'conventional-recommended-version';
+    var cr = require(method);
+    cr.get(options, function (err, version) {
       if (err) {
         reject(err);
       } else {
