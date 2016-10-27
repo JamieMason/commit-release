@@ -33,5 +33,8 @@ function onComplete (err, options) {
     process.exit(1);
   }
 
-  console.log(chalk.green('Release ' + options.version + ' committed and tagged, changelog updated.'));
+  console.log(chalk.green(
+    'Release ' + options.version + ' committed' +
+    (!options.noTag ? ' and tagged' : '') +
+    ', changelog updated.'));
 }

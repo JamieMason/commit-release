@@ -57,7 +57,7 @@ function createCommit (options) {
   var stage = exec.shell.bind(null, 'git', ['add', '.', '-A'], options.verbose);
   var commit = exec.shell.bind(null, 'git', ['commit', '-m', message, verify], options.verbose);
   var doTag = exec.shell.bind(null, 'git', ['tag', options.version, force], options.verbose);
-  var tag = !options.noTag ? doTag() : options;
+  var tag = !options.noTag ? doTag : function () {};
 
   return checkVersion(options)
     .then(bump)
