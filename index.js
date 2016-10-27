@@ -13,6 +13,7 @@ program
   .option('-n, --no-verify', 'skip git commit hooks')
   .option('-o, --override [version]', 'override recommended version number', '')
   .option('-p, --postfix [name]', 'a postfix such as "rc1", "canary" or "beta1"', '')
+  .option('-t, --no-tag', 'does not automatically tag the commit')
   .parse(process.argv);
 
 commitRelease.create({
@@ -20,7 +21,8 @@ commitRelease.create({
   force: program.force,
   noVerify: !program.verify,
   overrideVersion: program.override,
-  postfix: program.postfix
+  postfix: program.postfix,
+  noTag: !program.tag,
 }, onComplete);
 
 function onComplete (err, options) {
@@ -28,5 +30,6 @@ function onComplete (err, options) {
     console.error(chalk.red(err.stack ? err.stack : err));
     process.exit(1);
   }
+
   console.log(chalk.green('Release ' + options.version + ' committed and tagged, changelog updated.'));
 }

@@ -43,14 +43,21 @@ function checkTagExists (options) {
 }
 
 function createCommit (options) {
+  // variables
   var logPath = path.resolve(options.directory, 'CHANGELOG.md');
+  var force = options.force ? '--force' : '';
+  var message = 'chore(release): ' + options.version;
+  var verify = options.noVerify ? '--no-verify' : '';
+
+  // actions
   var bump = exec.shell.bind(null, 'npm', ['version', options.version, '--no-git-tag-version', '--force']);
   var clearLog = exec.shell.bind(null, 'rm', ['-f', logPath]);
   var writeLog = updateChangeLog.bind(null, options);
   var writeDependencies = updateDepsLog.bind(null, options.directory);
   var stage = exec.shell.bind(null, 'git', ['add', '.', '-A']);
-  var commit = exec.shell.bind(null, 'git', ['commit', '-m', 'chore(release): ' + options.version, options.noVerify ? '--no-verify' : '']);
-  var tag = exec.shell.bind(null, 'git', ['tag', options.version, options.force ? '--force' : '']);
+  var commit = exec.shell.bind(null, 'git', ['commit', '-m', message, verify]);
+  var doTag = exec.shell.bind(null, 'git', ['tag', options.version, force]);
+  var tag = !options.noTag ? doTag() : options;
 
   return checkVersion(options)
     .then(bump)
@@ -70,7 +77,7 @@ function checkVersion (options) {
       var error = new Error('Current version is already ' + options.version);
       reject(error);
     } else {
-      resolve(options.version);
+      resolve(options);
     }
   });
 }
