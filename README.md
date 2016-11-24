@@ -1,5 +1,7 @@
 # commit-release
 
+[![Analytics](https://ga-beacon.appspot.com/UA-45466560-5/commit-release?flat&useReferer)](https://github.com/igrigorik/ga-beacon)
+
 Commit and tag a release for a conventional changelog project.
 
 ## Install
