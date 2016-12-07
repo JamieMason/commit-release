@@ -1,7 +1,7 @@
 {
   "name": "commit-release",
   "description": "Commit and tag a release for a conventional changelog project.",
-  "version": "0.6.2",
+  "version": "0.6.3-enhanced",
   "author": "Jamie Mason (https://github.com/JamieMason)",
   "bin": {
     "commit-release": "./index.js"
@@ -13,6 +13,7 @@
     "chalk": "1.1.3",
     "commander": "2.9.0",
     "conventional-changelog": "1.1.0",
+    "conventional-recommended-bump": "0.3.0",
     "conventional-recommended-version": "0.3.2",
     "package-json-to-readme": "1.5.1"
   },

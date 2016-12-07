@@ -17,6 +17,7 @@ npm install commit-release --save
 - [chalk](https://github.com/chalk/chalk): Terminal string styling done right. Much color.
 - [commander](https://github.com/tj/commander.js): the complete solution for node.js command-line programs
 - [conventional-changelog](https://github.com/ajoslin/conventional-changelog): Generate a changelog from git metadata
+- [conventional-recommended-bump](https://github.com/conventional-changelog/conventional-recommended-bump): Get a recommended version bump based on conventional commits
 - [conventional-recommended-version](https://github.com/JamieMason/conventional-recommended-version): Using a conventional-changelog commit history, determine the current version number of your project.
 - [package-json-to-readme](https://github.com/zeke/package-json-to-readme): Generate a README.md from package.json contents
 
