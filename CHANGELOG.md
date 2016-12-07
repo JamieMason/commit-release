@@ -1,5 +1,15 @@
+<a name="0.6.3-enhanced"></a>
+## [0.6.3-enhanced](https://github.com/JamieMason/commit-release/compare/0.6.2-enhanced...v0.6.3-enhanced) (2016-12-07)
+
+
+### Bug Fixes
+
+* **verbose:** re-allow stdout ([cc68c7c](https://github.com/JamieMason/commit-release/commit/cc68c7c))
+
+
+
 <a name="0.6.2-enhanced"></a>
-## [0.6.2-enhanced](https://github.com/JamieMason/commit-release/compare/0.6.2...v0.6.2-enhanced) (2016-10-27)
+## [0.6.2-enhanced](https://github.com/JamieMason/commit-release/compare/0.6.2...0.6.2-enhanced) (2016-10-27)
 
 
 ### Bug Fixes
