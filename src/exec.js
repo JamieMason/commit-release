@@ -22,7 +22,7 @@ function execShell (program, args, verbose) {
 
     function onStdout (data) {
       console.log(template, tell(data));
-      stdout += tell(data);
+      stdout += data;
     }
 
     function onStderr (data) {
