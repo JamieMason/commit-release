@@ -15,7 +15,7 @@ program
   .option('-p, --postfix [name]', 'a postfix such as "rc1", "canary" or "beta1"', '')
   .parse(process.argv);
 
-commitRelease.create({
+commitRelease({
   directory: process.cwd(),
   force: program.force,
   noVerify: !program.verify,
