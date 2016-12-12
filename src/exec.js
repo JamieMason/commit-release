@@ -1,6 +1,8 @@
+// node modules
+var childProcess = require('child_process');
+
 // 3rd party modules
 var chalk = require('chalk');
-var childProcess = require('child_process');
 
 // public
 module.exports = {
@@ -8,7 +10,7 @@ module.exports = {
 };
 
 // implementation
-function execShell (program, args) {
+function execShell(program, args) {
   return new Promise(function (resolve, reject) {
     var truthyArgs = args.filter(isTruthy);
     var proc = childProcess.spawn(program, truthyArgs);
@@ -20,17 +22,17 @@ function execShell (program, args) {
     proc.stderr.on('data', onStderr);
     proc.on('close', onClose);
 
-    function onStdout (data) {
+    function onStdout(data) {
       console.log(template, data);
       stdout += data;
     }
 
-    function onStderr (data) {
+    function onStderr(data) {
       console.log(template, data);
       stderr += data;
     }
 
-    function onClose (code) {
+    function onClose(code) {
       if (code === 1) {
         reject(stderr);
       } else {
@@ -40,11 +42,11 @@ function execShell (program, args) {
   });
 }
 
-function isTruthy (value) {
-  return !!value;
+function isTruthy(value) {
+  return Boolean(value);
 }
 
-function getLogTemplate (program, args) {
+function getLogTemplate(program, args) {
   var command = [program].concat(args).join(' ');
   return chalk.grey('>> ' + command) + '\n%s';
 }

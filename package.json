@@ -17,7 +17,7 @@
     "package-json-to-readme": "1.5.1"
   },
   "devDependencies": {
-    "semistandard": "8.0.0"
+    "xo": "0.17.1"
   },
   "homepage": "https://github.com/JamieMason/commit-release",
   "issues": "https://github.com/JamieMason/commit-release/issues",
@@ -39,6 +39,13 @@
     "url": "git://github.com/JamieMason/commit-release.git"
   },
   "scripts": {
-    "lint": "semistandard --format"
+    "lint": "xo --fix"
+  },
+  "xo": {
+    "envs": [
+      "node"
+    ],
+    "esnext": false,
+    "space": 2
   }
 }

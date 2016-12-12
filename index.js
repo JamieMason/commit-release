@@ -5,7 +5,7 @@ var chalk = require('chalk');
 var program = require('commander');
 
 // modules
-var commitRelease = require('./src/commitRelease');
+var commitRelease = require('./src/commit-release');
 
 // implementation
 program
@@ -23,7 +23,7 @@ commitRelease.create({
   postfix: program.postfix
 }, onComplete);
 
-function onComplete (err, options) {
+function onComplete(err, options) {
   if (err) {
     console.error(chalk.red(err.stack ? err.stack : err));
     process.exit(1);

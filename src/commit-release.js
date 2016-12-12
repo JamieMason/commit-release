@@ -1,8 +1,10 @@
+// node modules
+var fs = require('fs');
+var path = require('path');
+
 // 3rd party modules
 var changelog = require('conventional-changelog');
 var crv = require('conventional-recommended-version');
-var fs = require('fs');
-var path = require('path');
 
 // modules
 var exec = require('./exec');
@@ -13,23 +15,23 @@ module.exports = {
 };
 
 // implementation
-function create (options, done) {
+function create(options, done) {
   getVersion(options)
     .then(checkTagExists)
     .then(createCommit)
     .then(onSuccess, onError)
     .catch(onError);
 
-  function onSuccess () {
+  function onSuccess() {
     done(null, options);
   }
 
-  function onError (message) {
+  function onError(message) {
     done(message);
   }
 }
 
-function checkTagExists (options) {
+function checkTagExists(options) {
   if (!options.force) {
     return exec.shell('git', ['tag', '--list', options.version])
       .then(function (output) {
@@ -42,7 +44,7 @@ function checkTagExists (options) {
   return options;
 }
 
-function createCommit (options) {
+function createCommit(options) {
   var logPath = path.resolve(options.directory, 'CHANGELOG.md');
   var bump = exec.shell.bind(null, 'npm', ['version', options.version, '--no-git-tag-version', '--force']);
   var clearLog = exec.shell.bind(null, 'rm', ['-f', logPath]);
@@ -62,10 +64,10 @@ function createCommit (options) {
     .then(tag);
 }
 
-function checkVersion (options) {
+function checkVersion(options) {
   return new Promise(function (resolve, reject) {
     var pkgPath = path.resolve(options.directory, 'package.json');
-    var pkg = require(pkgPath);
+    var pkg = require(pkgPath); // eslint-disable-line import/no-dynamic-require
     if (options.version === pkg.version) {
       var error = new Error('Current version is already ' + options.version);
       reject(error);
@@ -75,7 +77,7 @@ function checkVersion (options) {
   });
 }
 
-function updateChangeLog (options) {
+function updateChangeLog(options) {
   return new Promise(function (resolve, reject) {
     var writeStream = fs.createWriteStream(
       path.resolve(options.directory, 'CHANGELOG.md')
@@ -90,7 +92,7 @@ function updateChangeLog (options) {
       releaseCount: 0
     }).pipe(writeStream);
 
-    function onWriteEnd (err) {
+    function onWriteEnd(err) {
       if (err) {
         reject(err);
       } else {
@@ -100,7 +102,7 @@ function updateChangeLog (options) {
   });
 }
 
-function getVersion (options) {
+function getVersion(options) {
   if (options.overrideVersion) {
     options.version = options.overrideVersion;
     return Promise.resolve(options);
@@ -117,7 +119,7 @@ function getVersion (options) {
   });
 }
 
-function updateDepsLog (directory) {
+function updateDepsLog(directory) {
   var bin = require.resolve('package-json-to-readme');
   var pkgPath = path.resolve(directory, 'package.json');
   var logFile = path.resolve(directory, 'DEPENDENCIES.md');
