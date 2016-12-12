@@ -1,3 +1,6 @@
+// 3rd party modules
+var when = require('when');
+
 // modules
 var childProcess = require('./lib/child-process');
 
@@ -10,7 +13,7 @@ function checkTagExists(options) {
     return childProcess.exec('git tag --list ' + options.version)
       .then(function (output) {
         if (output.trim() !== '') {
-          return Promise.reject('A tag with name "' + options.version + '" already exists.');
+          return when.reject('A tag with name "' + options.version + '" already exists.');
         }
         return options;
       });

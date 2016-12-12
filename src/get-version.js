@@ -1,5 +1,6 @@
 // 3rd party modules
 var crv = require('conventional-recommended-version');
+var when = require('when');
 
 // public
 module.exports = getVersion;
@@ -8,9 +9,9 @@ module.exports = getVersion;
 function getVersion(options) {
   if (options.overrideVersion) {
     options.version = options.overrideVersion;
-    return Promise.resolve(options);
+    return when.resolve(options);
   }
-  return new Promise(function (resolve, reject) {
+  return when.promise(function (resolve, reject) {
     crv.get(options, function (err, version) {
       if (err) {
         reject(err);

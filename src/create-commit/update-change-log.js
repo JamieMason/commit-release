@@ -3,6 +3,7 @@ var path = require('path');
 
 // 3rd party modules
 var changelog = require('conventional-changelog');
+var when = require('when');
 
 // modules
 var fs = require('../lib/fs');
@@ -12,7 +13,7 @@ module.exports = updateChangeLog;
 
 // implementation
 function updateChangeLog(options) {
-  return new Promise(function (resolve, reject) {
+  return when.promise(function (resolve, reject) {
     var writeStream = fs.createWriteStream(
       path.resolve(options.directory, 'CHANGELOG.md')
     );
