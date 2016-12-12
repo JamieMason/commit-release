@@ -13,7 +13,7 @@ function checkTagExists(options) {
     return when.resolve(options);
   }
   return childProcess.exec('git tag --list ' + options.version)
-    .then(function(output) {
+    .then(function (output) {
       if (output.stdout === options.version) {
         return when.reject('A tag with name "' + options.version + '" already exists.');
       }

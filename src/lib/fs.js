@@ -8,7 +8,7 @@ var rateLimit = require('./rate-limit');
 // public
 module.exports = {
   createWriteStream: fs.createWriteStream,
-  writeFileSync: wrap(fs.writeFileSync)
+  writeFile: wrap(fs.writeFile)
 };
 
 function wrap(fn) {

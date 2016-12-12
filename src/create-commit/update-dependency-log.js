@@ -17,7 +17,9 @@ function updateDependencyLog(options) {
   var logFile = path.resolve(options.directory, 'DEPENDENCIES.md');
   return childProcess.spawn('node', [pathToPackageJsonToReadme, '--no-footer', pkgPath])
     .then(function (logData) {
-      fs.writeFileSync(logFile, logData);
+      return fs.writeFile(logFile, logData.stdout);
+    })
+    .then(function () {
       return options;
     });
 }
