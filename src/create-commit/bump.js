@@ -1,12 +1,12 @@
 // modules
-var exec = require('../exec');
+var childProcess = require('../lib/child-process');
 
 // public
 module.exports = bump;
 
 // implementation
 function bump(options) {
-  return exec.shell('npm', ['version', options.version, '--no-git-tag-version', '--force'])
+  return childProcess.exec('npm version ' + options.version + ' --no-git-tag-version --force')
     .then(function () {
       return options;
     });

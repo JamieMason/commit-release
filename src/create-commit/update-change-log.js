@@ -1,9 +1,11 @@
 // node modules
-var fs = require('fs');
 var path = require('path');
 
 // 3rd party modules
 var changelog = require('conventional-changelog');
+
+// modules
+var fs = require('../lib/fs');
 
 // public
 module.exports = updateChangeLog;

@@ -1,12 +1,14 @@
 // modules
-var exec = require('../exec');
+var childProcess = require('../lib/child-process');
 
 // public
 module.exports = tag;
 
 // implementation
 function tag(options) {
-  return exec.shell('git', ['tag', options.version, options.force ? '--force' : '']).then(function () {
+  var baseArgs = ['tag', options.version];
+  var args = options.force ? baseArgs.concat('--force') : baseArgs;
+  return childProcess.exec('git', args).then(function () {
     return options;
   });
 }
