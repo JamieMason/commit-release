@@ -13,11 +13,13 @@ program
   .option('-n, --no-verify', 'skip git commit hooks')
   .option('-o, --override [version]', 'override recommended version number', '')
   .option('-p, --postfix [name]', 'a postfix such as "rc1", "canary" or "beta1"', '')
+  .option('-t, --no-tag', 'skip tagging the commit')
   .parse(process.argv);
 
 commitRelease({
   directory: process.cwd(),
   force: program.force,
+  noTag: !program.tag,
   noVerify: !program.verify,
   overrideVersion: program.override,
   postfix: program.postfix

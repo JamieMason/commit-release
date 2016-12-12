@@ -1,3 +1,6 @@
+// 3rd party modules
+var when = require('when');
+
 // modules
 var childProcess = require('../lib/child-process');
 
@@ -6,9 +9,10 @@ module.exports = tag;
 
 // implementation
 function tag(options) {
-  var baseArgs = ['tag', options.version];
-  var args = options.force ? baseArgs.concat('--force') : baseArgs;
-  return childProcess.exec('git', args).then(function () {
+  if (options.noTag) {
+    return when.resolve(options);
+  }
+  return childProcess.exec('git tag ' + options.version + (options.force ? ' --force' : '')).then(function () {
     return options;
   });
 }

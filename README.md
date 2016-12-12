@@ -24,4 +24,5 @@ $ commit-release --help
     -n, --no-verify           skip git commit hooks
     -o, --override [version]  override recommended version number
     -p, --postfix [name]      a postfix such as "rc1", "canary" or "beta1"
+    -t, --no-tag'             skip tagging the commit
 ```
