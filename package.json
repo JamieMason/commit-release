@@ -2,12 +2,15 @@
   "name": "commit-release",
   "description": "Commit and tag a release for a conventional changelog project.",
   "version": "0.6.2",
-  "author": "Jamie Mason (https://github.com/JamieMason)",
+  "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
   "bin": {
-    "commit-release": "./index.js"
+    "commit-release": "dist/bin.js"
   },
-  "bugs": {
-    "url": "https://github.com/JamieMason/commit-release/issues"
+  "bugs": "https://github.com/JamieMason/commit-release/issues",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "dependencies": {
     "chalk": "1.1.3",
@@ -20,9 +23,21 @@
     "when": "3.7.7"
   },
   "devDependencies": {
-    "xo": "0.17.1"
+    "babel-cli": "6.26.0",
+    "babel-plugin-transform-object-rest-spread": "6.26.0",
+    "babel-preset-es2015": "6.24.1",
+    "cz-conventional-changelog": "2.0.0",
+    "eslint-config-xo": "0.18.2",
+    "eslint-plugin-ava": "4.2.1",
+    "eslint-plugin-unicorn": "2.1.2",
+    "fast-async": "6.3.0",
+    "rimraf": "2.6.1",
+    "xo": "0.18.2"
   },
-  "homepage": "https://github.com/JamieMason/commit-release",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/JamieMason/commit-release#readme",
   "issues": "https://github.com/JamieMason/commit-release/issues",
   "keywords": [
     "changelog",
@@ -36,19 +51,26 @@
     "workflow"
   ],
   "license": "MIT",
-  "main": "./index.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/JamieMason/commit-release.git"
-  },
+  "main": "commit-release",
+  "repository": "JamieMason/commit-release",
   "scripts": {
-    "lint": "xo --fix"
+    "build": "babel --out-dir ./dist --ignore node_modules ./src",
+    "lint": "xo",
+    "prebuild": "rimraf dist",
+    "prepack": "npm run build",
+    "test": "npm run lint"
   },
   "xo": {
     "envs": [
       "node"
     ],
-    "esnext": false,
+    "esnext": true,
+    "rules": {
+      "import/extensions": 0,
+      "import/no-unassigned-import": 0,
+      "object-curly-spacing": 0,
+      "unicorn/no-process-exit": 0
+    },
     "space": 2
   }
 }
