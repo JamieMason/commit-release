@@ -42,7 +42,7 @@ const commitChanges = ({ directory, nextVersion, skipHooks }) => {
 
 const getVersion = ({ directory, postfix }) =>
   when.promise((resolve, reject) =>
-    crv.get({ directory, postfix }, (err, version) => (err ? reject(err) : resolve(version)))
+    crv({ directory, postfix }, (err, version) => (err ? reject(err) : resolve(version)))
   );
 
 const stageChanges = directory =>
