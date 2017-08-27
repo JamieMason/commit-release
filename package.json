@@ -19,6 +19,7 @@
     "conventional-recommended-version": "0.4.1",
     "execa": "0.8.0",
     "graceful-fs": "4.1.11",
+    "nodent-runtime": "3.0.4",
     "package-json-to-readme": "2.0.0",
     "when": "3.7.8"
   },
