@@ -24,6 +24,7 @@ npm test
 - [conventional-recommended-version](https://github.com/JamieMason/conventional-recommended-version): Determine the semantic version number of your project
 - [execa](https://github.com/sindresorhus/execa): A better `child_process`
 - [graceful-fs](https://github.com/isaacs/node-graceful-fs): A drop-in replacement for fs, making various improvements.
+- [nodent-runtime](https://github.com/MatAtBread/nodent-runtime): Runtime component of nodent
 - [package-json-to-readme](https://github.com/zeke/package-json-to-readme): Generate a README.md from package.json contents
 - [when](https://github.com/cujojs/when): A lightweight Promises/A+ and when() implementation, plus other async goodies.
 

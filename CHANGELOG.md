@@ -1,3 +1,13 @@
+<a name="0.7.5"></a>
+## [0.7.5](https://github.com/jamiemason/commit-release/compare/0.7.4...0.7.5) (2017-08-27)
+
+
+### Bug Fixes
+
+* **npm:** add missing nodent-runtime ([b1fc805](https://github.com/jamiemason/commit-release/commit/b1fc805))
+
+
+
 <a name="0.7.4"></a>
 ## [0.7.4](https://github.com/jamiemason/commit-release/compare/0.6.2...0.7.4) (2017-08-26)
 
