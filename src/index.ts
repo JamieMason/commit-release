@@ -79,7 +79,7 @@ const generateDependencyReport = (dependencyLogPath: string, manifestPath: strin
       process.exit(1);
     });
 
-export default async ({
+export const commitRelease = async ({
   directory,
   force = false,
   postfix = '',

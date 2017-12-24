@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import * as program from 'commander';
-import commitRelease from './index';
+import { commitRelease } from './index';
 import { bug } from './lib/log';
 
 const { version } = require('../package.json');
