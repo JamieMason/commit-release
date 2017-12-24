@@ -6,7 +6,7 @@ export const bug = (value, err) =>
   console.error(
     chalk.red('! %s\n\n! Please raise an issue at %s\n\n%s'),
     value,
-    chalk.underline('https://github.com/JamieMason/syncpack/issues'),
+    chalk.underline('https://github.com/JamieMason/commit-release/issues'),
     String(err.stack).replace(/^/gm, '    ')
   );
 export const error = value => console.error(chalk.red('! %s'), value);
