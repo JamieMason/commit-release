@@ -41,9 +41,8 @@ const commitChanges = (directory: string, nextVersion: string, skipHooks: boolea
 
 const getVersion = (directory: string, postfix: string): Promise<string> =>
   new Promise((resolve, reject) =>
-    crv(
-      { directory, postfix },
-      (err: Error | null, version: string | undefined) => (err ? reject(err) : resolve(version))
+    crv({ directory, postfix }, (err: Error | null, version: string | undefined) =>
+      err ? reject(err) : resolve(version)
     )
   );
 

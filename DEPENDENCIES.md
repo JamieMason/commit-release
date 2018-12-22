@@ -4,10 +4,10 @@ Commit and tag a release for a conventional changelog project.
 
 ## Installation
 
-This is a [Node.js](https://nodejs.org/) module available through the 
-[npm registry](https://www.npmjs.com/). It can be installed using the 
+This is a [Node.js](https://nodejs.org/) module available through the
+[npm registry](https://www.npmjs.com/). It can be installed using the
 [`npm`](https://docs.npmjs.com/getting-started/installing-npm-packages-locally)
-or 
+or
 [`yarn`](https://yarnpkg.com/en/)
 command line tools.
 

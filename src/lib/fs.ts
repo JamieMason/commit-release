@@ -13,7 +13,7 @@ export const unlink = (path: string): Promise<void> =>
     });
   });
 
-export const writeFile = (path: string, contents: string, options?: object): Promise<void> =>
+export const writeFile = (path: string, contents: string, options: object | null = null): Promise<void> =>
   new Promise((resolve, reject) => {
     fsWriteFile(path, contents, options, (err: Error | null) => (err ? reject(err) : resolve()));
   });

@@ -26,6 +26,5 @@ declare module 'conventional-changelog' {
       verbose?: boolean;
     }
   }
-  export default function changelog(options?: changelog.Option): NodeJS.ReadWriteStream {
-  }
+  export default function changelog(options?: changelog.Option): NodeJS.ReadWriteStream {}
 }
