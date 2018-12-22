@@ -1,7 +1,7 @@
 {
   "name": "commit-release",
   "description": "Commit and tag a release for a conventional changelog project.",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "author": "Jamie Mason <jamie@foldleft.io> (https://github.com/JamieMason)",
   "bin": {
     "commit-release": "dist/bin.js"
