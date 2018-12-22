@@ -1,5 +1,5 @@
 import execa = require('execa');
-import { readJSONSync, writeFile, ensureFile } from 'fs-extra';
+import { ensureFile, readJSONSync, writeFile } from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { log } from './lib/log';
 
@@ -72,10 +72,18 @@ export const commitRelease = async ({
     return stdout;
   };
 
+  const formatMarkdown = async () => {
+    const baseArgs = ['--parser', 'markdown', '--prose-wrap', 'always', '--print-width', '80'];
+    const args = baseArgs.concat('--write', changelogPath, dependencyLogPath);
+    const { stdout } = await execa(BIN_PRETTIER, args, { cwd: directory });
+    return stdout;
+  };
+
   const { stdout: binPath } = await execa('npm', ['bin'], { cwd: __dirname });
   const BIN_CHANGELOG = resolvePath(binPath, 'conventional-changelog');
   const BIN_CRV = resolvePath(binPath, 'conventional-recommended-version');
   const BIN_MANIFEST_TO_README = resolvePath(binPath, 'readme');
+  const BIN_PRETTIER = resolvePath(binPath, 'prettier');
   const changelogPath = resolvePath(directory, 'CHANGELOG.md');
   const dependencyLogPath = resolvePath(directory, 'DEPENDENCIES.md');
   const manifestPath = resolvePath(directory, 'package.json');
@@ -101,6 +109,8 @@ export const commitRelease = async ({
 
   await generateDependencyReport();
   log.info(`dependency report: ${dependencyLogPath}`);
+
+  await formatMarkdown();
 
   await stageChanges();
   await commitChanges();
