@@ -1,82 +1,7 @@
-import crv from 'conventional-recommended-version';
+import execa = require('execa');
+import { readJSONSync, writeFile, ensureFile } from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { exec, spawn } from './lib/child-process';
-import { createWriteStream, unlink, writeFile } from './lib/fs';
-import { bug as logBug, error as logError, info as logInfo, success as logSuccess } from './lib/log';
-import { IOptions } from './typings';
-
-const changelog = require('conventional-changelog');
-
-const bumpVersion = (directory: string, nextVersion: string) =>
-  exec(`npm version ${nextVersion} --no-git-tag-version --force`, { cwd: directory }).catch((err: Error) => {
-    logBug(`failed to run "npm version" with version "${nextVersion}"`, err);
-    process.exit(1);
-  });
-
-const tagExists = (tagName: string): Promise<boolean> =>
-  exec(`git tag --list ${tagName}`).then(({ stdout }) => stdout === tagName);
-
-const abortOnExistingTag = (force: boolean, nextVersion: string, tagRelease: boolean) =>
-  Promise.resolve().then(async () => {
-    if (tagRelease && !force && (await tagExists(nextVersion))) {
-      logError(`the tag ${nextVersion} already exists`);
-      process.exit(1);
-    }
-  });
-
-const abortOnUnchangedVersion = (manifestPath: string, nextVersion: string) =>
-  Promise.resolve().then(() => {
-    const { version: currentVersion } = require(manifestPath);
-    if (nextVersion === currentVersion) {
-      logError(`the current version is already ${nextVersion}`);
-      process.exit(1);
-    }
-  });
-
-const commitChanges = (directory: string, nextVersion: string, skipHooks: boolean) => {
-  const baseArgs = ['commit', '-m', `chore(release): ${nextVersion}`];
-  const args = skipHooks ? baseArgs.concat('--no-verify') : baseArgs;
-  return spawn('git', args, { cwd: directory });
-};
-
-const getVersion = (directory: string, postfix: string): Promise<string> =>
-  new Promise((resolve, reject) =>
-    crv({ directory, postfix }, (err: Error | null, version: string | undefined) =>
-      err ? reject(err) : resolve(version)
-    )
-  );
-
-const stageChanges = (directory: string) =>
-  exec('git add . -A', { cwd: directory }).catch((err: Error) => {
-    logBug('failed to stage changes for release commit', err);
-    process.exit(1);
-  });
-
-const tagCommit = (directory: string, force: boolean, nextVersion: string) =>
-  exec(`git tag ${nextVersion}${force ? ' --force' : ''}`, { cwd: directory });
-
-const generateChangelog = (changelogPath: string, directory: string) =>
-  unlink(changelogPath)
-    .then(
-      () =>
-        new Promise((resolve, reject) => {
-          const fileWrite$ = createWriteStream(changelogPath);
-          fileWrite$.on('finish', (err: Error) => (err ? reject(err) : resolve()));
-          changelog({ path: directory, preset: 'angular', releaseCount: 0 }).pipe(fileWrite$);
-        })
-    )
-    .catch((err: Error) => {
-      logBug('failed to generate changelog', err);
-      process.exit(1);
-    });
-
-const generateDependencyReport = (dependencyLogPath: string, manifestPath: string) =>
-  spawn('node', [require.resolve('package-json-to-readme'), '--no-footer', manifestPath])
-    .then((stdout) => writeFile(dependencyLogPath, stdout, { encoding: 'utf8' }))
-    .catch((err: Error) => {
-      logBug('failed to generate dependency report', err);
-      process.exit(1);
-    });
+import { log } from './lib/log';
 
 export const commitRelease = async ({
   directory,
@@ -85,32 +10,106 @@ export const commitRelease = async ({
   skipHooks = false,
   tagRelease = true,
   version = ''
-}: IOptions) => {
-  const nextVersion = version || (await getVersion(directory, postfix));
+}: {
+  directory: string;
+  force?: boolean;
+  postfix?: string;
+  skipHooks?: boolean;
+  tagRelease?: boolean;
+  version?: string;
+}) => {
+  const bumpVersion = async () => {
+    const args = ['version', nextVersion, '--no-git-tag-version', '--force'];
+    const { stdout } = await execa('npm', args, { cwd: directory });
+    return stdout;
+  };
+
+  const tagExists = async () => {
+    const args = ['tag', '--list', nextVersion];
+    const { stdout } = await execa('git', args, { cwd: directory });
+    return stdout === nextVersion;
+  };
+
+  const commitChanges = async () => {
+    const baseArgs = ['commit', '-m', `chore(release): ${nextVersion}`];
+    const args = skipHooks ? baseArgs.concat('--no-verify') : baseArgs;
+    const { stdout } = await execa('git', args, { cwd: directory });
+    return stdout;
+  };
+
+  const getNextVersion = async () => {
+    const args = ['--directory', directory, '--postfix', postfix];
+    const { stdout } = await execa(BIN_CRV, args, { cwd: directory });
+    return stdout;
+  };
+
+  const stageChanges = async () => {
+    const args = ['add', directory, '-A'];
+    const { stdout } = await execa('git', args, { cwd: directory });
+    return stdout;
+  };
+
+  const tagCommit = async () => {
+    const baseArgs = ['tag', nextVersion];
+    const args = force ? baseArgs.concat('--force') : baseArgs;
+    const { stdout } = await execa('git', args, { cwd: directory });
+    return stdout;
+  };
+
+  const generateChangelog = async () => {
+    const baseArgs = ['--preset', 'angular', '--release-count', '0', '--pkg', manifestPath];
+    const args = baseArgs.concat('--infile', changelogPath, '--outfile', changelogPath);
+    await ensureFile(changelogPath);
+    const { stdout } = await execa(BIN_CHANGELOG, args, { cwd: directory });
+    return stdout;
+  };
+
+  const generateDependencyReport = async () => {
+    const args = ['--no-footer', manifestPath];
+    const { stdout } = await execa(BIN_MANIFEST_TO_README, args, { cwd: directory });
+    await ensureFile(dependencyLogPath);
+    await writeFile(dependencyLogPath, stdout, { encoding: 'utf8' });
+    return stdout;
+  };
+
+  const { stdout: binPath } = await execa('npm', ['bin'], { cwd: __dirname });
+  const BIN_CHANGELOG = resolvePath(binPath, 'conventional-changelog');
+  const BIN_CRV = resolvePath(binPath, 'conventional-recommended-version');
+  const BIN_MANIFEST_TO_README = resolvePath(binPath, 'readme');
   const changelogPath = resolvePath(directory, 'CHANGELOG.md');
   const dependencyLogPath = resolvePath(directory, 'DEPENDENCIES.md');
   const manifestPath = resolvePath(directory, 'package.json');
+  const manifest = readJSONSync(manifestPath, { throws: false }) || {};
+  const nextVersion = version || (await getNextVersion());
+  const thisTagExists = await tagExists();
 
-  await abortOnUnchangedVersion(manifestPath, nextVersion);
-  await abortOnExistingTag(force, nextVersion, tagRelease);
-
-  await bumpVersion(directory, nextVersion);
-  logInfo(`version: ${nextVersion}`);
-
-  await generateChangelog(changelogPath, directory);
-  logInfo(`changelog: ${changelogPath}`);
-
-  await generateDependencyReport(dependencyLogPath, manifestPath);
-  logInfo(`dependency report: ${dependencyLogPath}`);
-
-  await stageChanges(directory);
-  await commitChanges(directory, nextVersion, skipHooks);
-  logInfo(`release committed`);
-
-  if (tagRelease) {
-    await tagCommit(directory, force, nextVersion);
-    logInfo(`release tagged`);
+  if (nextVersion === manifest.version) {
+    log.error(`the current version is already ${nextVersion}`);
+    process.exit(1);
   }
 
-  logSuccess('complete');
+  if (tagRelease && !force && thisTagExists) {
+    log.error(`the tag ${nextVersion} already exists`);
+    process.exit(1);
+  }
+
+  await bumpVersion();
+  log.info(`version: ${nextVersion}`);
+
+  await generateChangelog();
+  log.info(`changelog: ${changelogPath}`);
+
+  await generateDependencyReport();
+  log.info(`dependency report: ${dependencyLogPath}`);
+
+  await stageChanges();
+  await commitChanges();
+  log.info(`release committed`);
+
+  if (tagRelease) {
+    await tagCommit();
+    log.info(`release tagged`);
+  }
+
+  log.success('complete');
 };

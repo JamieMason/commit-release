@@ -1,24 +1,11 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "es6",
-      "dom"
-    ],
+    "lib": ["es2015"],
     "outDir": "./dist",
     "skipLibCheck": true,
     "strict": true,
-    "target": "es3",
-    "typeRoots": [
-      "@types",
-      "./src/@types"
-    ]
+    "target": "es3"
   },
-  "files": [
-    "./src/index.ts"
-  ],
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["./src/**/*.ts"]
 }

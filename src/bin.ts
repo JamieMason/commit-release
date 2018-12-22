@@ -2,7 +2,7 @@
 
 import * as program from 'commander';
 import { commitRelease } from './index';
-import { bug } from './lib/log';
+import { log } from './lib/log';
 
 const { version } = require('../package.json');
 
@@ -23,6 +23,6 @@ commitRelease({
   tagRelease: Boolean(program.tag),
   version: program.override
 }).catch((err) => {
-  bug('uncaught error in commitRelease', err);
+  log.bug('uncaught error in commitRelease', err);
   process.exit(1);
 });
