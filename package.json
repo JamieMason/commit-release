@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "chalk": "2.4.1",
-    "commander": "2.19.0",
+    "commander": "2.20.0",
     "conventional-changelog-cli": "2.0.11",
     "conventional-recommended-version": "0.5.2",
     "execa": "1.0.0",
