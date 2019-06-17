@@ -1,3 +1,15 @@
+## [1.2.2](https://github.com/JamieMason/commit-release/compare/1.2.1...1.2.2) (2019-06-17)
+
+### Bug Fixes
+
+- **npm:** update dependencies
+  ([66a579d](https://github.com/JamieMason/commit-release/commit/66a579d)),
+  closes [#9](https://github.com/JamieMason/commit-release/issues/9)
+  [#10](https://github.com/JamieMason/commit-release/issues/10)
+  [#11](https://github.com/JamieMason/commit-release/issues/11)
+  [#12](https://github.com/JamieMason/commit-release/issues/12)
+  [#13](https://github.com/JamieMason/commit-release/issues/13)
+
 ## [1.2.1](https://github.com/JamieMason/commit-release/compare/1.0.0...1.2.1) (2018-12-22)
 
 ### Bug Fixes
