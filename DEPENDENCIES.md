@@ -22,7 +22,7 @@ npm install commit-release --save
   Generate a changelog from git metadata
 - [conventional-recommended-version](https://ghub.io/conventional-recommended-version):
   Determine the semantic version number of your project
-- [execa](https://ghub.io/execa): A better `child_process`
+- [execa](https://ghub.io/execa): Process execution for humans
 - [fs-extra](https://ghub.io/fs-extra): fs-extra contains methods that
   aren&#39;t included in the vanilla Node.js fs package. Such as mkdir -p, cp
   -r, and rm -rf.

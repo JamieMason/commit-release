@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/JamieMason/commit-release/compare/1.2.2...1.2.3) (2019-07-04)
+
+### Bug Fixes
+
+- **npm:** address security alert
+  ([6488429](https://github.com/JamieMason/commit-release/commit/6488429))
+
 ## [1.2.2](https://github.com/JamieMason/commit-release/compare/1.2.1...1.2.2) (2019-06-17)
 
 ### Bug Fixes
