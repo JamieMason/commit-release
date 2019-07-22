@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/JamieMason/commit-release/compare/1.2.3...1.2.4) (2019-07-22)
+
+### Bug Fixes
+
+- **npm:** update dependencies
+  ([9ee3d1b](https://github.com/JamieMason/commit-release/commit/9ee3d1b))
+
 ## [1.2.3](https://github.com/JamieMason/commit-release/compare/1.2.2...1.2.3) (2019-07-04)
 
 ### Bug Fixes

@@ -37,7 +37,8 @@ npm install commit-release --save
   entry for chalk, which provides its own types definitions
 - [@types/commander](https://ghub.io/@types/commander): Stub TypeScript
   definitions entry for commander, which provides its own types definitions
-- [@types/execa](https://ghub.io/@types/execa): TypeScript definitions for execa
+- [@types/execa](https://ghub.io/@types/execa): Stub TypeScript definitions
+  entry for execa, which provides its own types definitions
 - [@types/fs-extra](https://ghub.io/@types/fs-extra): TypeScript definitions for
   fs-extra
 - [@types/node](https://ghub.io/@types/node): TypeScript definitions for Node.js
