@@ -17,7 +17,7 @@
     "commander": "2.20.0",
     "conventional-changelog-cli": "2.0.21",
     "conventional-recommended-version": "0.5.2",
-    "execa": "2.0.2",
+    "execa": "2.0.3",
     "fs-extra": "8.1.0",
     "package-json-to-readme": "2.1.1",
     "prettier": "1.18.2"
@@ -25,13 +25,13 @@
   "devDependencies": {
     "@types/chalk": "2.2.0",
     "@types/commander": "2.12.2",
-    "@types/execa": "0.9.0",
+    "@types/execa": "2.0.0",
     "@types/fs-extra": "8.0.0",
-    "@types/node": "12.0.12",
-    "@types/prettier": "1.16.4",
+    "@types/node": "12.6.8",
+    "@types/prettier": "1.18.0",
     "rimraf": "2.6.3",
     "tslint": "5.18.0",
-    "typescript": "3.5.2"
+    "typescript": "3.5.3"
   },
   "files": [
     "dist"
@@ -52,6 +52,9 @@
   "license": "MIT",
   "main": "dist/index.js",
   "repository": "JamieMason/commit-release",
+  "resolutions": {
+    "lodash": ">=4.17.13"
+  },
   "scripts": {
     "build": "tsc --project .",
     "format": "prettier --write '**/*.md' './src/**/*.ts'",
