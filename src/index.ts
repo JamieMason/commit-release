@@ -2,7 +2,6 @@ import { exec as execCb } from 'child_process';
 import { getVersion } from 'conventional-recommended-version';
 import { ensureFile, readJSONSync, writeFile } from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { format } from 'prettier';
 import { promisify } from 'util';
 import { getChangelog } from './lib/get-changelog';
 import { log } from './lib/log';
@@ -73,9 +72,8 @@ export const commitRelease = async ({
 
   async function generateChangelog() {
     const contents = await getChangelog(directory, org, repo);
-    const pretty = format(contents, { proseWrap: 'never', parser: 'markdown' });
     await ensureFile(changelogPath);
-    await writeFile(changelogPath, pretty);
+    await writeFile(changelogPath, contents);
   }
 
   async function tagCommit() {

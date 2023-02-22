@@ -63,15 +63,15 @@ export class DefaultTemplate {
   }
 
   feature(commit: ConventionalCommit) {
-    return this.writeCommit('', commit);
+    return this.writeCommit('🎁 ', commit);
   }
 
   bugFix(commit: ConventionalCommit) {
-    return this.writeCommit('', commit);
+    return this.writeCommit('🪲 ', commit);
   }
 
   perfImprovement(commit: ConventionalCommit) {
-    return this.writeCommit('', commit);
+    return this.writeCommit('🚀 ', commit);
   }
 
   writeCommit(icon: string, commit: ConventionalCommit): string {
