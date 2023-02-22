@@ -1,5 +1,4 @@
-import type { Giterator } from 'giterator';
-import { getSemverTag } from './get-semver-tag';
+import type { ConventionalCommit } from './conventional-commit';
 
 type Options = {
   org: string;
@@ -9,16 +8,14 @@ type Options = {
 export const write = {
   releaseHeader(
     { org, repo }: Options,
-    release: Giterator.Commit,
-    priorRelease: Giterator.Commit,
+    release: ConventionalCommit,
+    priorRelease: ConventionalCommit,
   ): string {
-    const version = getSemverTag(release);
-    const priorVersion = getSemverTag(priorRelease);
     const compareUrl = `https://github.com/${org}/${repo}/compare`;
     const date = release.committerDate?.replace(/T.+$/, '');
-    return priorVersion
-      ? `## [${version}](${compareUrl}/${priorVersion}...${version}) (${date})`
-      : `## ${version} (${date})`;
+    return priorRelease.version
+      ? `## [${release.version}](${compareUrl}/${priorRelease.version}...${release.version}) (${date})`
+      : `## ${release.version} (${date})`;
   },
   feature: writeCommit.bind(null, 'feat'),
   bugFix: writeCommit.bind(null, 'fix'),
@@ -28,55 +25,29 @@ export const write = {
 function writeCommit(
   type: 'feat' | 'fix' | 'perf',
   options: Options,
-  commit: Giterator.Commit,
+  commit: ConventionalCommit,
 ): string {
   const { org, repo } = options;
-  const scope = commit.subject?.replace(`${type}(`, '').split('): ')[0] || '';
-  const message = commit.subject?.split('): ')[1] || '';
-  const hash = commit.commitHash;
-  const shortHash = hash?.slice(0, 7);
-  const commitUrl = `https://github.com/${org}/${repo}/commit/${hash}`;
-  const closesIssues = getRefs('closes', options, commit);
-  const refsIssues = getRefs('refs', options, commit);
+  const { breakingChanges, commitHash, scope, message, shortHash } = commit;
+  const commitUrl = `https://github.com/${org}/${repo}/commit/${commitHash}`;
+  const closes = getIssueUrls(options, commit.closes);
+  const refs = getIssueUrls(options, commit.refs);
   const linked = [
-    closesIssues.length ? `(closes: ${closesIssues.join(', ')})` : '',
-    refsIssues.length ? `(refs: ${refsIssues.join(', ')})` : '',
+    closes.length ? `(closes: ${closes.join(', ')})` : '',
+    refs.length ? `(refs: ${refs.join(', ')})` : '',
   ]
     .filter(Boolean)
     .join(' ');
-  const breaking = getBreakingChanges(commit);
-  const body = breaking ? `\n\n${breaking}` : '';
+  const body = breakingChanges ? `\n\n${breakingChanges}` : '';
   return `* **${scope}:** ${message} ([${shortHash}](${commitUrl})) ${linked}${body}`;
 }
 
-function getBreakingChanges(commit: Giterator.Commit): string {
-  if (`${commit.body}`.search(/BREAKING CHANGE/) === -1) return '';
-  return `${commit.body}`
-    .trim()
-    .split('\n')
-    .map((line) => {
-      if (line.includes('BREAKING CHANGE')) return '### Breaking Changes';
-      if (line.search(/^(closes|refs)/i) !== -1) return '';
-      if (line.search(/Co-authored-by/i) !== -1) return '';
-      return line;
-    })
-    .join('\n')
-    .trim();
-}
-
-function getRefs(
-  type: 'closes' | 'refs',
+function getIssueUrls(
   { org, repo }: Options,
-  commit: Giterator.Commit,
+  issueNumbers: string[],
 ): string[] {
-  return `${commit.body}`
-    .split('\n')
-    .filter((line) => line.toLowerCase().startsWith(type))
-    .flatMap((line) => line.match(/#[0-9]+/) || '')
-    .filter(Boolean)
-    .map((issue) => {
-      const issueNumber = issue.replace('#', '');
-      const url = `https://github.com/${org}/${repo}/issues/${issueNumber}`;
-      return `[${issue}](${url})`;
-    });
+  return issueNumbers.map((issueNumber) => {
+    const url = `https://github.com/${org}/${repo}/issues/${issueNumber}`;
+    return `[#${issueNumber}](${url})`;
+  });
 }
