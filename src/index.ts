@@ -90,7 +90,7 @@ export const commitRelease = async ({
     return run('git', [
       'commit',
       '-m',
-      `chore(release): ${nextVersion}`,
+      `"chore(release): ${nextVersion}"`,
       ...(skipHooks ? ['--no-verify'] : []),
     ]);
   }
