@@ -1,4 +1,4 @@
-import type { ConventionalCommit } from '../conventional-commit';
+import type { ConventionalCommit } from '../../conventional-commit';
 
 export class DefaultTemplate {
   org: string;

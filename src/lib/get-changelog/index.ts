@@ -1,8 +1,8 @@
 import type { Giterator } from 'giterator';
 import { giterator } from 'giterator';
-import type { ConventionalCommit } from './conventional-commit';
-import { getConventionalCommit } from './conventional-commit';
-import { getSemverTag } from './get-semver-tag';
+import type { ConventionalCommit } from '../conventional-commit';
+import { getConventionalCommit } from '../conventional-commit';
+import { getSemverTag } from '../get-semver-tag';
 import { DefaultTemplate } from './templates/default';
 
 export async function getChangelog(
