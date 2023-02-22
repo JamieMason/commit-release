@@ -1,7 +1,22 @@
-import execa = require('execa');
+import { exec as execCb } from 'child_process';
+import { getVersion } from 'conventional-recommended-version';
 import { ensureFile, readJSONSync, writeFile } from 'fs-extra';
 import { resolve as resolvePath } from 'path';
+import { format } from 'prettier';
+import { promisify } from 'util';
+import { getChangelog } from './lib/get-changelog';
 import { log } from './lib/log';
+
+const execa = promisify(execCb);
+
+export interface Options {
+  directory: string;
+  force?: boolean;
+  postfix?: string;
+  skipHooks?: boolean;
+  tagRelease?: boolean;
+  version?: string;
+}
 
 export const commitRelease = async ({
   directory,
@@ -9,87 +24,25 @@ export const commitRelease = async ({
   postfix = '',
   skipHooks = false,
   tagRelease = true,
-  version = ''
-}: {
-  directory: string;
-  force?: boolean;
-  postfix?: string;
-  skipHooks?: boolean;
-  tagRelease?: boolean;
-  version?: string;
-}) => {
-  const bumpVersion = async () => {
-    const args = ['version', nextVersion, '--no-git-tag-version', '--force'];
-    const { stdout } = await execa('npm', args, { cwd: directory });
-    return stdout;
-  };
-
-  const tagExists = async () => {
-    const args = ['tag', '--list', nextVersion];
-    const { stdout } = await execa('git', args, { cwd: directory });
-    return stdout === nextVersion;
-  };
-
-  const commitChanges = async () => {
-    const baseArgs = ['commit', '-m', `chore(release): ${nextVersion}`];
-    const args = skipHooks ? baseArgs.concat('--no-verify') : baseArgs;
-    const { stdout } = await execa('git', args, { cwd: directory });
-    return stdout;
-  };
-
-  const getNextVersion = async () => {
-    const args = ['--directory', directory, '--postfix', postfix];
-    const { stdout } = await execa(BIN_CRV, args, { cwd: directory });
-    return stdout;
-  };
-
-  const stageChanges = async () => {
-    const args = ['add', directory, '-A'];
-    const { stdout } = await execa('git', args, { cwd: directory });
-    return stdout;
-  };
-
-  const tagCommit = async () => {
-    const baseArgs = ['tag', nextVersion];
-    const args = force ? baseArgs.concat('--force') : baseArgs;
-    const { stdout } = await execa('git', args, { cwd: directory });
-    return stdout;
-  };
-
-  const generateChangelog = async () => {
-    const baseArgs = ['--preset', 'angular', '--release-count', '0', '--pkg', manifestPath];
-    const args = baseArgs.concat('--infile', changelogPath, '--outfile', changelogPath);
-    await ensureFile(changelogPath);
-    const { stdout } = await execa(BIN_CHANGELOG, args, { cwd: directory });
-    return stdout;
-  };
-
-  const generateDependencyReport = async () => {
-    const args = ['--no-footer', manifestPath];
-    const { stdout } = await execa(BIN_MANIFEST_TO_README, args, { cwd: directory });
-    await ensureFile(dependencyLogPath);
-    await writeFile(dependencyLogPath, stdout, { encoding: 'utf8' });
-    return stdout;
-  };
-
-  const formatMarkdown = async () => {
-    const baseArgs = ['--parser', 'markdown', '--prose-wrap', 'always', '--print-width', '80'];
-    const args = baseArgs.concat('--write', changelogPath, dependencyLogPath);
-    const { stdout } = await execa(BIN_PRETTIER, args, { cwd: directory });
-    return stdout;
-  };
-
-  const { stdout: binPath } = await execa('npm', ['bin'], { cwd: __dirname });
-  const BIN_CHANGELOG = resolvePath(binPath, 'conventional-changelog');
-  const BIN_CRV = resolvePath(binPath, 'conventional-recommended-version');
-  const BIN_MANIFEST_TO_README = resolvePath(binPath, 'readme');
-  const BIN_PRETTIER = resolvePath(binPath, 'prettier');
+  version = '',
+}: Options) => {
   const changelogPath = resolvePath(directory, 'CHANGELOG.md');
-  const dependencyLogPath = resolvePath(directory, 'DEPENDENCIES.md');
   const manifestPath = resolvePath(directory, 'package.json');
   const manifest = readJSONSync(manifestPath, { throws: false }) || {};
-  const nextVersion = version || (await getNextVersion());
+  const semver =
+    version ||
+    (await getVersion(directory).then(
+      ({ major, minor, patch }) => `${major}.${minor}.${patch}`,
+    ));
+  const nextVersion = postfix ? [semver, postfix].join('-') : semver;
   const thisTagExists = await tagExists();
+
+  if (`${manifest.repository}`.search(/[^a-z0-9.-_]/i) !== -1) {
+    log.error('repository field is not a string in format "org/repo"');
+    process.exit(1);
+  }
+
+  const [org, repo] = manifest.repository.split('/');
 
   if (nextVersion === manifest.version) {
     log.error(`the current version is already ${nextVersion}`);
@@ -107,11 +60,6 @@ export const commitRelease = async ({
   await generateChangelog();
   log.info(`changelog: ${changelogPath}`);
 
-  await generateDependencyReport();
-  log.info(`dependency report: ${dependencyLogPath}`);
-
-  await formatMarkdown();
-
   await stageChanges();
   await commitChanges();
   log.info(`release committed`);
@@ -122,4 +70,44 @@ export const commitRelease = async ({
   }
 
   log.success('complete');
+
+  async function generateChangelog() {
+    const contents = await getChangelog(directory, org, repo);
+    const pretty = format(contents, { proseWrap: 'never', parser: 'markdown' });
+    await ensureFile(changelogPath);
+    await writeFile(changelogPath, pretty);
+  }
+
+  async function tagCommit() {
+    return run('git', ['tag', nextVersion, ...(force ? ['--force'] : [])]);
+  }
+
+  async function stageChanges() {
+    return run('git', ['add', directory, '-A']);
+  }
+
+  async function commitChanges() {
+    return run('git', [
+      'commit',
+      '-m',
+      `chore(release): ${nextVersion}`,
+      ...(skipHooks ? ['--no-verify'] : []),
+    ]);
+  }
+
+  async function tagExists() {
+    return run('git', ['tag', '--list', nextVersion]);
+  }
+
+  async function bumpVersion() {
+    manifest.version = nextVersion;
+    await writeFile(manifestPath, JSON.stringify(manifest, null, 2));
+  }
+
+  async function run(bin: string, args: string[]): Promise<string> {
+    const { stdout } = await execa([bin, ...args].join(' '), {
+      cwd: directory,
+    });
+    return stdout;
+  }
 };
