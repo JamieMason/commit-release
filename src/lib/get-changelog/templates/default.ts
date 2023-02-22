@@ -1,4 +1,4 @@
-import type { ConventionalCommit } from '../../conventional-commit';
+import type { Commit } from '../get-commits';
 
 export class DefaultTemplate {
   org: string;
@@ -16,11 +16,11 @@ export class DefaultTemplate {
     priorRelease,
     release,
   }: {
-    feat: ConventionalCommit[];
-    fix: ConventionalCommit[];
-    perf: ConventionalCommit[];
-    release: ConventionalCommit;
-    priorRelease: ConventionalCommit;
+    feat: Commit[];
+    fix: Commit[];
+    perf: Commit[];
+    release: Commit;
+    priorRelease: Commit;
   }): string {
     const lines: string[] = [];
     lines.push(this.releaseHeader(release, priorRelease));
@@ -49,10 +49,7 @@ export class DefaultTemplate {
     return lines.join('\n');
   }
 
-  releaseHeader(
-    release: ConventionalCommit,
-    priorRelease: ConventionalCommit,
-  ): string {
+  releaseHeader(release: Commit, priorRelease: Commit): string {
     const priorVersion = priorRelease.version;
     const version = release.version;
     const compareUrl = this.repoUrl(`/compare/${priorVersion}...${version}`);
@@ -62,19 +59,19 @@ export class DefaultTemplate {
       : `## ${version} (${date})`;
   }
 
-  feature(commit: ConventionalCommit) {
+  feature(commit: Commit) {
     return this.writeCommit('🎁 ', commit);
   }
 
-  bugFix(commit: ConventionalCommit) {
+  bugFix(commit: Commit) {
     return this.writeCommit('🪲 ', commit);
   }
 
-  perfImprovement(commit: ConventionalCommit) {
+  perfImprovement(commit: Commit) {
     return this.writeCommit('🚀 ', commit);
   }
 
-  writeCommit(icon: string, commit: ConventionalCommit): string {
+  writeCommit(icon: string, commit: Commit): string {
     const { breakingChanges, commitHash, scope, message, shortHash } = commit;
     const commitUrl = this.repoUrl(`/commit/${commitHash}`);
     const closes = this.getIssueUrls(commit.closes);
