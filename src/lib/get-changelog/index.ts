@@ -51,7 +51,7 @@ export async function getChangelog(
 
   function flush(commit: ConventionalCommit, release: ConventionalCommit) {
     const priorRelease = commit;
-    template.release({ feat, fix, perf, priorRelease, release });
+    lines.push(template.release({ feat, fix, perf, priorRelease, release }));
   }
 }
 

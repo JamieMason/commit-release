@@ -21,7 +21,7 @@ export class DefaultTemplate {
     perf: ConventionalCommit[];
     release: ConventionalCommit;
     priorRelease: ConventionalCommit;
-  }) {
+  }): string {
     const lines: string[] = [];
     lines.push(this.releaseHeader(release, priorRelease));
     lines.push('');
