@@ -1,7 +1,8 @@
+import { giterator } from 'giterator';
 import type { Giterator } from 'giterator';
-import { getSemverTag } from './get-semver-tag';
+import { getSemverTag } from '../get-semver-tag';
 
-export type ConventionalCommit = Giterator.Commit & {
+export type Commit = Giterator.Commit & {
   breakingChanges: string;
   closes: string[];
   message: string;
@@ -12,9 +13,16 @@ export type ConventionalCommit = Giterator.Commit & {
   version: string;
 };
 
-export function getConventionalCommit(
-  commit: Giterator.Commit,
-): ConventionalCommit {
+export async function* getCommits(directory: string) {
+  for await (const baseCommit of giterator(directory, {
+    pageSize: 20,
+    skipMerges: true,
+  })) {
+    yield getConventionalCommit(baseCommit);
+  }
+}
+
+function getConventionalCommit(commit: Giterator.Commit): Commit {
   const [type, scope, message] = `${commit.subject}`.split(/[()]:? ?/g);
   return {
     ...commit,

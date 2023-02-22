@@ -1,8 +1,7 @@
 import type { Giterator } from 'giterator';
-import { giterator } from 'giterator';
-import type { ConventionalCommit } from '../conventional-commit';
-import { getConventionalCommit } from '../conventional-commit';
 import { getSemverTag } from '../get-semver-tag';
+import type { Commit } from './get-commits';
+import { getCommits } from './get-commits';
 import { DefaultTemplate } from './templates/default';
 
 export async function getChangelog(
@@ -12,19 +11,15 @@ export async function getChangelog(
 ) {
   const template = new DefaultTemplate(org, repo);
 
-  let release: ConventionalCommit | null = null;
-  let firstCommit: ConventionalCommit | null = null;
-  const feat: ConventionalCommit[] = [];
-  const fix: ConventionalCommit[] = [];
-  const perf: ConventionalCommit[] = [];
+  let release: Commit | null = null;
+  let firstCommit: Commit | null = null;
+  const feat: Commit[] = [];
+  const fix: Commit[] = [];
+  const perf: Commit[] = [];
 
   const lines: string[] = [];
 
-  for await (const baseCommit of giterator(directory, {
-    pageSize: 20,
-    skipMerges: true,
-  })) {
-    const commit = getConventionalCommit(baseCommit);
+  for await (const commit of getCommits(directory)) {
     const semver = getSemverTag(commit);
     // collect commits from the previous release
     if (release) {
@@ -49,7 +44,7 @@ export async function getChangelog(
 
   return lines.join('\n');
 
-  function flush(commit: ConventionalCommit, release: ConventionalCommit) {
+  function flush(commit: Commit, release: Commit) {
     const priorRelease = commit;
     lines.push(template.release({ feat, fix, perf, priorRelease, release }));
   }
